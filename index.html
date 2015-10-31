@@ -93,7 +93,7 @@
               var height = $("svg").width();
 
 
-              var controller = new Controller(10, height, width);
+              var controller = new Controller(10, height, width, false, 100);
 
 
               //take array of data. append or remove datapoints
@@ -119,22 +119,26 @@
 
                 }
 
-            //controller.addData([1,2,3,4,5,6,7,8,9,10,11,12,13]);
-            //update(controller.updateDataset());
-            //update(controller.Draw($("svg").height(), $("svg").width()));
 
-            var testData = [1,2,3,4,5,6,7,8,9,10,11,12,13];
+            var testData = [1,2,3,4,5,6,7,8,9,10];
+
 
             var i = 0;
+            controller.addData(testData);
+
+           update(controller.updateDataset());
+           update(controller.Draw($("svg").height(), $("svg").width()));
+
          setInterval(function() //update viewport size and things
             {
               ++i;
-                controller.addData([Math.sin(i)]);
+                //controller.addData([Math.sin(i)]);
 
                 update(controller.updateDataset());
                 update(controller.Draw($("svg").height(), $("svg").width()));
                 //controller.addData([{"Temperature":0.00, "Pressure":15.00, "Humidity":i*10 + 10}]);
             }
+
             , 100);
 
     });
