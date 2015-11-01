@@ -91,21 +91,44 @@
                   .attr('width', '100%')
                       .attr('height', '100%');
               var width = $("svg").width();
-              var height = $("svg").width();
+              var height = $("svg").height();
 
 
               var controller = new Controller(20, height, width, false, 100);
 
    /*D3 Permanent Canvas Items*/
          console.log(svg);
-         svg.append("line")
-         .attr("x1", function(){return 100;})
-         .attr("y1", function(){return 1000;})
-         .attr("x2", function(){return 10;})
-         .attr("y2", function(){return 10;})
-         .attr("stroke", function(){return '#59B33C';})
-         .attr("stroke-width", function(d,i){return 2;});
 
+         var midWidth = width / 2 ;
+         var midHeight = height / 2;
+         var data = controller.getData();
+         var midY = (data.max - data.min) / 2;
+         //console.log(data);
+
+
+         svg.append("line")
+           .attr("x1", function(){return midWidth;})
+           .attr("y1", function(){return 0;})
+           .attr("x2", function(){return midWidth;})
+           .attr("y2", function(){return 20;})
+           .attr("stroke", function(){return '#010101';})
+           .attr("stroke-width", function(d,i){return 2;});
+
+
+        // <text x="0" y="15" fill="red">I love SVG!</text>
+
+         svg.append("line")
+         .attr("x1", function(){return 0})
+         .attr("y1", function(){return midHeight;})
+         .attr("x2", function(){return 20;})
+         .attr("y2", function(){return midHeight;})
+         .attr("stroke", function(){return '#010101';})
+         .attr("stroke-width", function(d,i){return 2;});
+       svg.append('text')
+          .attr('x', function(){return 25;})
+          .attr('y', function(){return midHeight;})
+          .attr('fill', function(){})
+          .text(midY);
 
 
    /*D3 Visualization Script*/
@@ -132,11 +155,12 @@
                         .attr("cx", function(d){return d.X;});
 
 
-                var line = svg.selectAll("line")
+                var line = svg.selectAll(".datapoint")
                         .data(data);
                     line.exit().remove();
 
                     line.enter().append("line")
+                        .attr('class', function(){return 'datapoint';})
                         .attr("x1", function(d,i)
                           {
                             if(i < 1){return 0;}
