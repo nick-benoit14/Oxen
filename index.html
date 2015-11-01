@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>Oxen Data Visualizer</title>
     <script type="text/javascript" src="inc/jquery/jquery-1.11.3.min.js">/* Include jQuery */</script>
     <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="inc/d3/d3.min.js"> /* Include D3 */</script>
@@ -84,7 +84,8 @@
 
 
 
-    <script> /* D3 Script */
+
+    <script> /* D3  Setup Script */
         $(document).ready(function(){
               var svg = d3.select('#view').append("svg") //Init D3
                   .attr('width', '100%')
@@ -93,8 +94,21 @@
               var height = $("svg").width();
 
 
-              var controller = new Controller(10, height, width, false, 100);
+              var controller = new Controller(20, height, width, false, 100);
 
+   /*D3 Permanent Canvas Items*/
+         console.log(svg);
+         svg.append("line")
+         .attr("x1", function(){return 100;})
+         .attr("y1", function(){return 1000;})
+         .attr("x2", function(){return 10;})
+         .attr("y2", function(){return 10;})
+         .attr("stroke", function(){return '#59B33C';})
+         .attr("stroke-width", function(d,i){return 2;});
+
+
+
+   /*D3 Visualization Script*/
 
               //take array of data. append or remove datapoints
                       //should be called with both updateDataset() and Draw() in that order
@@ -117,7 +131,62 @@
                         .attr("cy", function(d){return d.Y;})
                         .attr("cx", function(d){return d.X;});
 
-                }
+
+                var line = svg.selectAll("line")
+                        .data(data);
+                    line.exit().remove();
+
+                    line.enter().append("line")
+                        .attr("x1", function(d,i)
+                          {
+                            if(i < 1){return 0;}
+                            else{return data[i-1].X;}
+                          })
+                        .attr("y1", function(d,i)
+                          {
+                            if(i < 1){return 0;}
+                            else{return data[i-1].Y;}
+                          })
+                        .attr("x2", function(d,i)
+                          {
+                            if(i < 1){return 0;}
+                            else{return d.X;}
+                          })
+                        .attr("y2", function(d,i)
+                          {
+                            if(i < 1){return 0;}
+                            else{return d.Y;}
+                          })
+                        .attr("stroke", function(d,i)
+                          {
+                            return '#59B33C';
+                          })
+                        .attr("stroke-width", function(d,i){return 2;});
+
+                line.transition()
+                    .attr("x1", function(d,i)
+                      {
+                        if(i < 1){return 0;}
+                        else{return data[i-1].X;}
+                      })
+                    .attr("y1", function(d,i)
+                      {
+                        if(i < 1){return 0;}
+                        else{return data[i-1].Y;}
+                      })
+                    .attr("x2", function(d,i)
+                      {
+                        if(i < 1){return 0;}
+                        else{return d.X;}
+                      })
+                    .attr("y2", function(d,i)
+                      {
+                        if(i < 1){return 0;}
+                        else{return d.Y;}
+                      })
+                    .attr("stroke", function(d,i){return '#59B33C';})
+                    .attr("stroke-width", function(d,i){return 2;});
+        }
 
 
             var testData = [1,2,3,4,5,6,7,8,9,10];
@@ -132,14 +201,13 @@
          setInterval(function() //update viewport size and things
             {
               ++i;
-                //controller.addData([Math.sin(i)]);
+                controller.addData([Math.sin(i)]);
 
                 update(controller.updateDataset());
                 update(controller.Draw($("svg").height(), $("svg").width()));
-                //controller.addData([{"Temperature":0.00, "Pressure":15.00, "Humidity":i*10 + 10}]);
             }
 
-            , 100);
+            , 250);
 
     });
     </script>
@@ -147,7 +215,6 @@
   </head>
   <body>
     <div class="header">
-    <!-- geometric series square svg <img> -->
         <div class="title centerInline centerVert-Item">OXEN</div>
     </div>
 
