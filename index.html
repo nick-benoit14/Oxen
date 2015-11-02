@@ -97,38 +97,58 @@
               var controller = new Controller(20, height, width, false, 100);
 
    /*D3 Permanent Canvas Items*/
-         console.log(svg);
-
-         var midWidth = width / 2 ;
-         var midHeight = height / 2;
-         var data = controller.getData();
-         var midY = (data.max - data.min) / 2;
-         //console.log(data);
 
 
-         svg.append("line")
-           .attr("x1", function(){return midWidth;})
-           .attr("y1", function(){return 0;})
-           .attr("x2", function(){return midWidth;})
-           .attr("y2", function(){return 20;})
-           .attr("stroke", function(){return '#010101';})
-           .attr("stroke-width", function(d,i){return 2;});
+         var drawReferenceLines = function(height, width){
+           var midWidth = width / 2 ;
+           var midHeight = height / 2;
+           var data = controller.getData();
+           var midY = Math.round((Math.abs(data.max) - Math.abs(data.min)) / 2);
 
+           var top = svg.selectAll('.referenceLineTop').data([height]);
+           top.enter().append("line")
+            .attr('class', function(){return 'referenceLineTop';})
+             .attr("x1", function(){return midWidth;})
+             .attr("y1", function(){return 0;})
+             .attr("x2", function(){return midWidth;})
+             .attr("y2", function(){return 30;})
+             .attr("stroke", function(){return '#010101';})
+             .attr("stroke-width", function(d,i){return 2;});
+          top.transition()
+            .attr("x1", function(){return midWidth;})
+            .attr("y1", function(){return 0;})
+            .attr("x2", function(){return midWidth;})
+            .attr("y2", function(){return 30;});
 
-        // <text x="0" y="15" fill="red">I love SVG!</text>
+          var side = svg.selectAll('.referenceLineSide').data([width]);
 
-         svg.append("line")
-         .attr("x1", function(){return 0})
-         .attr("y1", function(){return midHeight;})
-         .attr("x2", function(){return 20;})
-         .attr("y2", function(){return midHeight;})
-         .attr("stroke", function(){return '#010101';})
-         .attr("stroke-width", function(d,i){return 2;});
-       svg.append('text')
-          .attr('x', function(){return 25;})
-          .attr('y', function(){return midHeight;})
-          .attr('fill', function(){})
-          .text(midY);
+            side.enter().append("line")
+            .attr('class', function(){return 'referenceLineSide';})
+            .attr("x1", function(){return 0})
+            .attr("y1", function(){return midHeight;})
+            .attr("x2", function(){return 50;})
+            .attr("y2", function(){return midHeight;})
+            .attr("stroke", function(){return '#010101';})
+            .attr("stroke-width", function(d,i){return 1;});
+
+            side.transition()
+              .attr("x1", function(){return 0;})
+              .attr("y1", function(){return midHeight;})
+              .attr("x2", function(){return 50;})
+              .attr("y2", function(){return midHeight;});
+
+            var sideText = svg.selectAll('.sideText').data([midY]);
+            sideText.enter().append("text")
+             .attr('class', function(){return 'sideText';})
+             .attr('x', function(){return 15;})
+             .attr('y', function(){return (midHeight - 10);})
+             .attr('fill', function(){})
+             .text(midY);
+            sideText.transition()
+              .attr('x', function(){return 15;})
+              .attr('y', function(){return (midHeight - 10);})
+              .text(midY);
+         }
 
 
    /*D3 Visualization Script*/
@@ -224,6 +244,8 @@
 
          setInterval(function() //update viewport size and things
             {
+              drawReferenceLines($("svg").height(), $("svg").width());
+
               ++i;
                 controller.addData([Math.sin(i)]);
 
@@ -234,6 +256,9 @@
             , 250);
 
     });
+
+
+
     </script>
 
   </head>
