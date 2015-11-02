@@ -1,13 +1,19 @@
 TODO
-  *Data Points Y inverted
-  *maybe should change tolerance
+
   *connect with serial port - connect
   *add stats calculation - stats
   *change colors and things - configure
 
 
 Currently working on
-    * Adding collector to MakeData.js
-            * pass create collector object in d3 script. pass updateDataset and Draw through
-              collector.Invert(updateDataset());      collector.Invert(Draw());
-              
+    Adding Reference Lines
+    Get reference to Max and Min - return and label midpoint on graph
+    
+
+
+Running Electron apps
+https://github.com/atom/electron/blob/master/docs/tutorial/quick-start.md
+
+
+Standalone Electron Apps
+http://blog.soulserv.net/building-a-package-featuring-electron-as-a-stand-alone-application/
