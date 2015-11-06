@@ -1,14 +1,22 @@
 TODO
 
   *connect with serial port - connect
+    * Connect to Serial Port
+    * Pass new data to controller
   *add stats calculation - stats
   *change colors and things - configure
 
 
+
 Currently working on
-    Adding Reference Lines
-    Get reference to Max and Min - return and label midpoint on graph
-    
+
+      Get Data from Serial Port,
+        Index.html polls IPC every so often,
+          if new data return data event.returnValue
+
+      Setup Serial Connection
+        export flush buffer
+        main.js call buffer flush and pass to index.html as requested
 
 
 Running Electron apps

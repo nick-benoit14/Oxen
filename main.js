@@ -13,7 +13,7 @@ app.on('window-all-closed', function() {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform != 'darwin') {
-    app.quit();
+    app.quit(0);
   }
 });
 
@@ -22,7 +22,6 @@ app.on('window-all-closed', function() {
 app.on('ready', function() {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 800, height: 600});
-
   // and load the index.html of the app.
   mainWindow.loadUrl('file://' + __dirname + '/index.html');
 
@@ -36,4 +35,12 @@ app.on('ready', function() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+});
+
+// In main process.
+
+var ipc = require('ipc');
+ipc.on('synchronous-message', function(event, arg) {
+  console.log(arg);  //return next dataPoint
+  event.returnValue = [1,2,3,4];
 });
