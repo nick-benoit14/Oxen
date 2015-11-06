@@ -3,12 +3,15 @@ TODO
   *connect with serial port - connect
     * Connect to Serial Port
     * Pass new data to controller
+
   *add stats calculation - stats
   *change colors and things - configure
 
 
 
 Currently working on
+
+      Select Port
 
       Get Data from Serial Port,
         Index.html polls IPC every so often,

@@ -2,13 +2,17 @@
 //Select Serial Port -> Open Serial Connection -> onData return save to buffer ->export flush buffer
 
 var serialport = require("serialport");
+var buffer = [];
 
 
 
 
 var Connection = function(){
 
-  this.selectPort = function(){} //->Open Port
+  this.selectPort = function(){
+
+    this.openConnection("/dev/ttyACM0", 9600);
+  } //->Open Port
 
   this.openConnection = function(portPath, baudRate){ //setup serial connection
 
@@ -16,23 +20,29 @@ var Connection = function(){
     var sp = new SerialPort(portPath, {
       baudrate: baudRate,
       parser: serialport.parsers.readline("\n")
-    });
+      },
+      function(err){if(err)console.log(err);});
 
     sp.open(function (error) {
+
       if(error){console.log('failed to open: '+error);} // No data for you
       else{
         console.log('open');
-        sp.on('data', function(data) {
-          //Do things with the data
+        sp.on('data', function(data) { //on data received save it in buffer
+          buffer.push(parseInt(data)); //Do things with the data
         });
       }
     });
-    console.log("Opened Connection");
   }
-
-  this.openConnection("/dafsd/", 5600);
-
-
+  this.selectPort();
 }
 
-module.exports = Connection;
+//module.exports = Connection;
+
+
+  exports.setupConnection = function(){Connection();}
+  exports.getData = function() {
+    var tmp = buffer;
+    buffer = [];
+    return tmp;
+  }
