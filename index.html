@@ -7,7 +7,7 @@
     <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="inc/d3/d3.min.js"> /* Include D3 */</script>
     <script type="text/javascript" src="inc/MakerData/src/MakeData.js">/* Include MakerData */</script>
-
+    <script type="text/javascript" src="transfer.js"></script>
 
     <style>
 
@@ -30,6 +30,9 @@
                /*set viewport hieght dynamically*/
             }
 
+           .popupmenu{height: 400px; width: 500px; position:absolute; margin:auto;
+           background-color:black;}
+
 
           /*Sidebar Styles*/
           .sidebar{background-color:#1C1C1F;
@@ -49,13 +52,16 @@
             }
             .sidebar.button
             {
-              display:inline-block; height:100%; width:auto; color:black;
               background: rgba(28, 28, 31, 0);
+              display:inline-block; height:100%; width:auto; color:black;
               font-size:30px;
               margin-left:20px; margin-right:20px;
               padding:5px;
               font-family: OpenSans, sans-serif;
-
+            }
+            .sidebar.button-selected{
+              background-color:#303037;
+              color:white;
             }
 
           /*Tool Styles*/
@@ -79,9 +85,34 @@
               $('#view').css('height', viewHeight + 'px');
             });
       });
+
     </script>
 
+    <script> /* Button Functionality */
+    $(document).ready(function()
+      {
+        var connect = $('#connect');
 
+          connect.mouseover(function(){
+              //console.log("on mouse over");
+              $('#connect').addClass('button-selected');
+          });
+          connect.mouseout(function(){
+            //console.log("mouseout");
+            connect.removeClass('button-selected');
+          });
+
+        connect.click(function(){
+          console.log("Cliked Connect");
+
+        });
+        $('#configure').click(function(){console.log("Cliked Configure")});
+        $('#stats').click(function(){console.log("Cliked Stats")});
+
+      });
+
+
+    </script>
 
 
 
@@ -94,11 +125,11 @@
               var height = $("svg").height();
 
 
-              var controller = new Controller(20, height, width, false, 100);
+              var controller = new Controller(50, height, width, false, 100);
 
    /*D3 Permanent Canvas Items*/
 
-
+/*
          var drawReferenceLines = function(height, width){
            var midWidth = width / 2 ;
            var midHeight = height / 2;
@@ -150,7 +181,7 @@
               .text(midY);
          }
 
-
+*/
    /*D3 Visualization Script*/
 
               //take array of data. append or remove datapoints
@@ -233,27 +264,25 @@
         }
 
 
-            var testData = [1,2,3,4,5,6,7,8,9,10];
 
 
-            var i = 0;
-            controller.addData(testData);
 
-           update(controller.updateDataset());
-           update(controller.Draw($("svg").height(), $("svg").width()));
+           var ipc = require('ipc');
+
 
          setInterval(function() //update viewport size and things
             {
-              drawReferenceLines($("svg").height(), $("svg").width());
+            //  drawReferenceLines($("svg").height(), $("svg").width()); - SLOW. so slow. why?
 
-              ++i;
-                controller.addData([Math.sin(i)]);
 
+              //console.log(ipc.sendSync('synchronous-message', 'data?'));
+
+                controller.addData(ipc.sendSync('synchronous-message', 'data?'));
                 update(controller.updateDataset());
                 update(controller.Draw($("svg").height(), $("svg").width()));
             }
 
-            , 250);
+            , 300);
 
     });
 
@@ -267,17 +296,25 @@
         <div class="title centerInline centerVert-Item">OXEN</div>
     </div>
 
+    <!--
+    <div class="popupmenu">
+      popup menu
+    </div>
+  -->
 
     <div id="view" class="view">
 
     </div>
 
 
+
     <div class="sidebar min">
-        <div class = "sidebar button">Connect</div>
-        <div class = "sidebar button">Configure</div>
-        <div class = "sidebar button">Stats</div>
+        <div id='connect' class = "sidebar button">Connect</div>
+        <div id='configure' class = "sidebar button">Configure</div>
+        <div id='stats' class = "sidebar button">Stats</div>
     </div>
+
+
 
   </body>
 </html>
