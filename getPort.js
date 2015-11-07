@@ -29,7 +29,7 @@ var Connection = function(){
       else{
         console.log('open');
         sp.on('data', function(data) { //on data received save it in buffer
-          buffer.push(parseInt(data)); //Do things with the data
+          buffer.push(parseFloat(data)); //Do things with the data
         });
       }
     });

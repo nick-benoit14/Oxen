@@ -1,8 +1,8 @@
 TODO
 
   *connect with serial port - connect
-    * Connect to Serial Port
-    * Pass new data to controller
+      * Select Serial Port
+      * Incoming Data too slow - handle
 
   *add stats calculation - stats
   *change colors and things - configure
@@ -11,11 +11,8 @@ TODO
 
 Currently working on
 
-      Select Port
+      Select Port - Connect Serial Port to main.js
 
-      Get Data from Serial Port,
-        Index.html polls IPC every so often,
-          if new data return data event.returnValue
 
       Setup Serial Connection
         export flush buffer

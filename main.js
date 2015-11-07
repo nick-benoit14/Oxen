@@ -1,7 +1,8 @@
+
+
 var app = require('app');  // Module to control application life.
 var BrowserWindow = require('browser-window');  // Module to create native browser window.
-
-
+var Connection = require("./getPort.js");
 
 // Report crashes to our server.
 require('crash-reporter').start();
@@ -41,8 +42,24 @@ app.on('ready', function() {
 
 // In main process.
 
+Connection.setupConnection(); //connecto to serial port
+
+
+var Data = function(){
+  var buffer = [];
+  this.getData = function(){
+    console.log(buffer.length);
+    var temp = [];
+    temp.push(buffer.shift());
+    if(buffer.length == 0) buffer = Connection.getData(); //when empty get new data
+    return temp;
+  }
+}
+
+var data = new Data();
+
 var ipc = require('ipc');
 ipc.on('synchronous-message', function(event, arg) {
-  console.log(arg);  //return next dataPoint
-  event.returnValue = [1,2,3,4];
+  //console.log(arg);  //print incoming message
+  event.returnValue = data.getData(); //get data from buffer one piece at time
 });

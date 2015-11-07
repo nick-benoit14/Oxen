@@ -80,13 +80,6 @@
             });
       });
 
-
-
-      // In renderer process (web page).
-      var ipc = require('ipc');
-      console.log(ipc.sendSync('synchronous-message', 'data?')); // prints "pong"
-
-
     </script>
 
 
@@ -241,22 +234,20 @@
         }
 
 
-            var testData = [1,2,3,4,5,6,7,8,9,10];
 
 
-            var i = 0;
-            controller.addData(testData);
 
-           update(controller.updateDataset());
-           update(controller.Draw($("svg").height(), $("svg").width()));
+           var ipc = require('ipc');
+
 
          setInterval(function() //update viewport size and things
             {
-            //  drawReferenceLines($("svg").height(), $("svg").width());
+            //  drawReferenceLines($("svg").height(), $("svg").width()); - SLOW. so slow. why?
 
-              ++i;
-                controller.addData([Math.sin(i)]);
 
+              //console.log(ipc.sendSync('synchronous-message', 'data?'));
+
+                controller.addData(ipc.sendSync('synchronous-message', 'data?'));
                 update(controller.updateDataset());
                 update(controller.Draw($("svg").height(), $("svg").width()));
             }
