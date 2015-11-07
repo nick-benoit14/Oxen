@@ -30,6 +30,9 @@
                /*set viewport hieght dynamically*/
             }
 
+           .popupmenu{height: 400px; width: 500px; position:absolute; margin:auto;
+           background-color:black;}
+
 
           /*Sidebar Styles*/
           .sidebar{background-color:#1C1C1F;
@@ -49,13 +52,16 @@
             }
             .sidebar.button
             {
-              display:inline-block; height:100%; width:auto; color:black;
               background: rgba(28, 28, 31, 0);
+              display:inline-block; height:100%; width:auto; color:black;
               font-size:30px;
               margin-left:20px; margin-right:20px;
               padding:5px;
               font-family: OpenSans, sans-serif;
-
+            }
+            .sidebar.button-selected{
+              background-color:#303037;
+              color:white;
             }
 
           /*Tool Styles*/
@@ -82,7 +88,31 @@
 
     </script>
 
+    <script> /* Button Functionality */
+    $(document).ready(function()
+      {
+        var connect = $('#connect');
 
+          connect.mouseover(function(){
+              //console.log("on mouse over");
+              $('#connect').addClass('button-selected');
+          });
+          connect.mouseout(function(){
+            //console.log("mouseout");
+            connect.removeClass('button-selected');
+          });
+
+        connect.click(function(){
+          console.log("Cliked Connect");
+
+        });
+        $('#configure').click(function(){console.log("Cliked Configure")});
+        $('#stats').click(function(){console.log("Cliked Stats")});
+
+      });
+
+
+    </script>
 
 
 
@@ -266,17 +296,25 @@
         <div class="title centerInline centerVert-Item">OXEN</div>
     </div>
 
+    <!--
+    <div class="popupmenu">
+      popup menu
+    </div>
+  -->
 
     <div id="view" class="view">
 
     </div>
 
 
+
     <div class="sidebar min">
-        <div class = "sidebar button">Connect</div>
-        <div class = "sidebar button">Configure</div>
-        <div class = "sidebar button">Stats</div>
+        <div id='connect' class = "sidebar button">Connect</div>
+        <div id='configure' class = "sidebar button">Configure</div>
+        <div id='stats' class = "sidebar button">Stats</div>
     </div>
+
+
 
   </body>
 </html>

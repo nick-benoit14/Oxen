@@ -11,7 +11,7 @@ var Connection = function(){
 
   this.selectPort = function(){
 
-    this.openConnection("/dev/ttyACM0", 9600);
+    this.openConnection("/dev/ttyACM1", 9600);
   } //->Open Port
 
   this.openConnection = function(portPath, baudRate){ //setup serial connection
