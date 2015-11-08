@@ -3,6 +3,7 @@
 
 var serialport = require("serialport");
 var buffer = [];
+var availablePorts = [];
 
 
 
@@ -11,7 +12,11 @@ var Connection = function(){
 
   this.selectPort = function(){
 
-    this.openConnection("/dev/ttyACM1", 9600);
+    serialport.list(function(err, ports){
+      availablePorts = ports;
+    });
+
+    this.openConnection("/dev/ttyACM0", 9600);
   } //->Open Port
 
   this.openConnection = function(portPath, baudRate){ //setup serial connection
@@ -46,3 +51,4 @@ var Connection = function(){
     buffer = [];
     return tmp;
   }
+  exports.getPorts = function(){return availablePorts}

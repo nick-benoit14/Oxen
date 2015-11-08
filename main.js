@@ -60,6 +60,11 @@ var data = new Data();
 
 var ipc = require('ipc');
 ipc.on('synchronous-message', function(event, arg) {
-  //console.log(arg);  //print incoming message
-  event.returnValue = data.getData(); //get data from buffer one piece at time
+    //console.log(arg);  //print incoming message
+  if(arg == 'data?') event.returnValue = data.getData(); //get data from buffer one piece at time
+  if(arg == 'ports?') event.returnValue = Connection.getPorts();
+});
+
+ipc.on('portSelection', function(event, arg) {
+
 });

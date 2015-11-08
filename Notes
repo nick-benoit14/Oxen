@@ -2,7 +2,7 @@ TODO
 
   *connect with serial port - connect
       * Select Serial Port
-      * Incoming Data too slow - handle
+      * Incoming Data too slow - handle BUT THE BUFFER IS SO LONG
 
   *add stats calculation - stats
   *change colors and things - configure
@@ -11,8 +11,12 @@ TODO
 
 Currently working on
 
-      Select Port - Connect Serial Port to main.js
+      Pass message from index.html with Selection to OpenConnection in main.js
 
+      
+      Move index.html logic to seperate JS file
+      app.start setup Connection in main process -> setinterval in index.html
+      finish connect button
 
       Setup Serial Connection
         export flush buffer

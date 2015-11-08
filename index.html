@@ -30,8 +30,14 @@
                /*set viewport hieght dynamically*/
             }
 
-           .popupmenu{height: 400px; width: 500px; position:absolute; margin:auto;
-           background-color:black;}
+           .popupmenu{height: 300px; width: 300px; position:absolute; margin-left:auto; margin-right:auto;
+             background: rgba(28, 28, 31, 0.7); left:0; right:0; text-align:center; font-family:OpenSans, sans-serif;
+             color:white;}
+           .portbutton{text-align:center;}
+           .portbutton.button-hover{background-color:#F7F7F7;color:black;}
+           .portbutton.button-selected{background-color:#F7F7F7;color:black;}
+
+}
 
 
           /*Sidebar Styles*/
@@ -69,6 +75,9 @@
 
     </style>
     <script> /*Resizing Item Script*/
+
+    var ipc = require('ipc');
+
     $(document).ready(function()
       {
 
@@ -91,23 +100,49 @@
     <script> /* Button Functionality */
     $(document).ready(function()
       {
+
         var connect = $('#connect');
 
-          connect.mouseover(function(){
-              //console.log("on mouse over");
-              $('#connect').addClass('button-selected');
-          });
-          connect.mouseout(function(){
-            //console.log("mouseout");
-            connect.removeClass('button-selected');
-          });
+          connect.mouseover(function(){$('#connect').addClass('button-selected');});
+          connect.mouseout(function(){connect.removeClass('button-selected');});
+          connect.click(function(){console.log("Cliked Connect");});  //Open Connect Popup
 
-        connect.click(function(){
-          console.log("Cliked Connect");
 
-        });
         $('#configure').click(function(){console.log("Cliked Configure")});
         $('#stats').click(function(){console.log("Cliked Stats")});
+
+
+        /* Connect PopupMenu  */
+
+          //get List of ports append to popup menu
+          //return selected Port
+          //set Interval
+
+          var portlist = $('.port-list');
+          var availablePorts = ipc.sendSync('synchronous-message', 'ports?');
+          var selectedPort;
+          console.log(availablePorts);
+
+          for(var i = 0; i < availablePorts.length; i++){
+            portlist.append("<div class='portbutton' id='" + i + "'>"+ availablePorts[i].comName + "</div>");
+          }
+
+            $('.portbutton').click(function(){
+            $('.portbutton').removeClass('button-selected');
+              $(this).addClass('button-selected');
+              selectedPort = parseInt($(this).attr('id'));
+              //console.log(selectedPort);
+            });
+            $('.portbutton').mouseover(function(){$(this).addClass('button-hover');});
+            $('.portbutton').mouseout(function(){$(this).removeClass('button-hover');});
+
+          $('.connect-button').mouseover();
+          $('.connect-button').mouseout();
+          $('.connect-button').click(function(){
+            start();
+          }); //TODO
+
+
 
       });
 
@@ -117,6 +152,10 @@
 
 
     <script> /* D3  Setup Script */
+
+    var app = function(){}
+
+
         $(document).ready(function(){
               var svg = d3.select('#view').append("svg") //Init D3
                   .attr('width', '100%')
@@ -263,30 +302,20 @@
                     .attr("stroke-width", function(d,i){return 2;});
         }
 
+var start = function(){
+  setInterval(function() //update viewport size and things
+     {
+     //  drawReferenceLines($("svg").height(), $("svg").width()); - SLOW. so slow. why?
 
+       //console.log(ipc.sendSync('synchronous-message', 'data?'));
 
-
-
-           var ipc = require('ipc');
-
-
-         setInterval(function() //update viewport size and things
-            {
-            //  drawReferenceLines($("svg").height(), $("svg").width()); - SLOW. so slow. why?
-
-
-              //console.log(ipc.sendSync('synchronous-message', 'data?'));
-
-                controller.addData(ipc.sendSync('synchronous-message', 'data?'));
-                update(controller.updateDataset());
-                update(controller.Draw($("svg").height(), $("svg").width()));
-            }
-
-            , 300);
+         controller.addData(ipc.sendSync('synchronous-message', 'data?'));
+         update(controller.updateDataset());
+         update(controller.Draw($("svg").height(), $("svg").width()));
+     }, 300);
+}
 
     });
-
-
 
     </script>
 
@@ -296,15 +325,16 @@
         <div class="title centerInline centerVert-Item">OXEN</div>
     </div>
 
-    <!--
+
     <div class="popupmenu">
-      popup menu
+      <h1 class ='connect-button'>Connect</h1>
+      <h3>Connect To Port</h3>
+      <div class="port-list" ></div>
+      <h3>Baud Rate</h3>
+      <ul class="baud-list"></ul>
     </div>
-  -->
 
-    <div id="view" class="view">
-
-    </div>
+    <div id="view" class="view"></div>
 
 
 
