@@ -3,21 +3,18 @@
 
 var serialport = require("serialport");
 var buffer = [];
-
-
+var availablePorts = [];
 
 
 var Connection = function(){
 
-  this.selectPort = function(){
+    //initalize Port List
+    serialport.list(function(err, ports){availablePorts = ports;});
 
-    this.openConnection("/dev/ttyACM1", 9600);
-  } //->Open Port
-
-  this.openConnection = function(portPath, baudRate){ //setup serial connection
+  this.openConnection = function(selectedPort, baudRate){ //setup serial connection
 
     var SerialPort = serialport.SerialPort; // localize object constructor
-    var sp = new SerialPort(portPath, {
+    var sp = new SerialPort(availablePorts[selectedPort].comName, {
       baudrate: baudRate,
       parser: serialport.parsers.readline("\n")
       },
@@ -34,15 +31,15 @@ var Connection = function(){
       }
     });
   }
-  this.selectPort();
 }
 
-//module.exports = Connection;
-
-
-  exports.setupConnection = function(){Connection();}
+  exports.init = function(){Connection();}
+  exports.setupConnection = function(path, rate){openConnection(path, rate);}
   exports.getData = function() {
     var tmp = buffer;
     buffer = [];
     return tmp;
   }
+  exports.getPorts = function(){
+    Connection();
+    return availablePorts;}

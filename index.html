@@ -7,7 +7,7 @@
     <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="inc/d3/d3.min.js"> /* Include D3 */</script>
     <script type="text/javascript" src="inc/MakerData/src/MakeData.js">/* Include MakerData */</script>
-    <script type="text/javascript" src="transfer.js"></script>
+    <script src='app.js'>/* D3 Graphing Script */</script>
 
     <style>
 
@@ -30,8 +30,14 @@
                /*set viewport hieght dynamically*/
             }
 
-           .popupmenu{height: 400px; width: 500px; position:absolute; margin:auto;
-           background-color:black;}
+           .popupmenu{height: 300px; width: 300px; position:absolute; margin-left:auto; margin-right:auto;
+             background: rgba(28, 28, 31, 0.7); left:0; right:0; text-align:center; font-family:OpenSans, sans-serif;
+             color:white;}
+           .portbutton{text-align:center;}
+           .portbutton.button-hover{background-color:#F7F7F7;color:black;}
+           .portbutton.button-selected{background-color:#F7F7F7;color:black;}
+
+}
 
 
           /*Sidebar Styles*/
@@ -66,9 +72,15 @@
 
           /*Tool Styles*/
         .centerInline{margin-left:auto; margin-right:auto;}
+        .invisible{display:none;}
 
     </style>
+
     <script> /*Resizing Item Script*/
+
+
+
+
     $(document).ready(function()
       {
 
@@ -91,203 +103,52 @@
     <script> /* Button Functionality */
     $(document).ready(function()
       {
+
+        var ipc = require('ipc');
+        var app = new App('#view', 50, false, 200);
+
         var connect = $('#connect');
 
-          connect.mouseover(function(){
-              //console.log("on mouse over");
-              $('#connect').addClass('button-selected');
-          });
-          connect.mouseout(function(){
-            //console.log("mouseout");
-            connect.removeClass('button-selected');
-          });
+          connect.mouseover(function(){$('#connect').addClass('button-selected');});
+          connect.mouseout(function(){connect.removeClass('button-selected');});
+          connect.click(function(){
+            console.log("Cliked Connect");
+            $('#connectPopup').removeClass('invisible');
+          });  //Open Connect Popup
 
-        connect.click(function(){
-          console.log("Cliked Connect");
 
-        });
         $('#configure').click(function(){console.log("Cliked Configure")});
         $('#stats').click(function(){console.log("Cliked Stats")});
 
+
+        /* Connect PopupMenu  */
+
+          var portlist = $('.port-list');
+          var availablePorts = ipc.sendSync('synchronous-message', 'ports?');
+          var selectedPort;
+
+          for(var i = 0; i < availablePorts.length; i++){
+            portlist.append("<div class='portbutton' id='" + i + "'>"+ availablePorts[i].comName + "</div>");
+          }
+
+            $('.portbutton').click(function(){
+              $('.portbutton').removeClass('button-selected');
+              $(this).addClass('button-selected');
+              selectedPort = parseInt($(this).attr('id'));
+            });
+            $('.portbutton').mouseover(function(){$(this).addClass('button-hover');});
+            $('.portbutton').mouseout(function(){$(this).removeClass('button-hover');});
+
+          $('.connect-button').mouseover();
+          $('.connect-button').mouseout();
+          $('.connect-button').click(function(){
+            //Open Connection
+            ipc.sendSync('portSelection', {'port':selectedPort, 'rate':9600}); //opens connection to selected port
+            app.start(function(){return ipc.sendSync('synchronous-message', 'data?');}); //begins grabbing data from buffer on interval
+            $('#connectPopup').addClass('invisible');
+
+          });
       });
-
-
-    </script>
-
-
-
-    <script> /* D3  Setup Script */
-        $(document).ready(function(){
-              var svg = d3.select('#view').append("svg") //Init D3
-                  .attr('width', '100%')
-                      .attr('height', '100%');
-              var width = $("svg").width();
-              var height = $("svg").height();
-
-
-              var controller = new Controller(50, height, width, false, 100);
-
-   /*D3 Permanent Canvas Items*/
-
-/*
-         var drawReferenceLines = function(height, width){
-           var midWidth = width / 2 ;
-           var midHeight = height / 2;
-           var data = controller.getData();
-           var midY = Math.round((Math.abs(data.max) - Math.abs(data.min)) / 2);
-
-           var top = svg.selectAll('.referenceLineTop').data([height]);
-           top.enter().append("line")
-            .attr('class', function(){return 'referenceLineTop';})
-             .attr("x1", function(){return midWidth;})
-             .attr("y1", function(){return 0;})
-             .attr("x2", function(){return midWidth;})
-             .attr("y2", function(){return 30;})
-             .attr("stroke", function(){return '#010101';})
-             .attr("stroke-width", function(d,i){return 2;});
-          top.transition()
-            .attr("x1", function(){return midWidth;})
-            .attr("y1", function(){return 0;})
-            .attr("x2", function(){return midWidth;})
-            .attr("y2", function(){return 30;});
-
-          var side = svg.selectAll('.referenceLineSide').data([width]);
-
-            side.enter().append("line")
-            .attr('class', function(){return 'referenceLineSide';})
-            .attr("x1", function(){return 0})
-            .attr("y1", function(){return midHeight;})
-            .attr("x2", function(){return 50;})
-            .attr("y2", function(){return midHeight;})
-            .attr("stroke", function(){return '#010101';})
-            .attr("stroke-width", function(d,i){return 1;});
-
-            side.transition()
-              .attr("x1", function(){return 0;})
-              .attr("y1", function(){return midHeight;})
-              .attr("x2", function(){return 50;})
-              .attr("y2", function(){return midHeight;});
-
-            var sideText = svg.selectAll('.sideText').data([midY]);
-            sideText.enter().append("text")
-             .attr('class', function(){return 'sideText';})
-             .attr('x', function(){return 15;})
-             .attr('y', function(){return (midHeight - 10);})
-             .attr('fill', function(){})
-             .text(midY);
-            sideText.transition()
-              .attr('x', function(){return 15;})
-              .attr('y', function(){return (midHeight - 10);})
-              .text(midY);
-         }
-
-*/
-   /*D3 Visualization Script*/
-
-              //take array of data. append or remove datapoints
-                      //should be called with both updateDataset() and Draw() in that order
-                      //smoothly transition
-              var update = function(data)
-                {
-
-                  var circle = svg.selectAll("circle").data(data); //init circles
-
-
-                      circle.exit().remove(); //remove circles when no corresponding data point
-
-                      circle.enter().append("circle") //add circle when there is corresponding data point
-                          .attr("cy", function(d){return d.Y;})
-                          .attr("r", function(d){return 5;})
-                          .attr("cx", function(d){return d.X;})
-                          .attr("fill", function(d, i){return '#59B33C';});
-
-                     circle.transition() //transition circles
-                        .attr("cy", function(d){return d.Y;})
-                        .attr("cx", function(d){return d.X;});
-
-
-                var line = svg.selectAll(".datapoint")
-                        .data(data);
-                    line.exit().remove();
-
-                    line.enter().append("line")
-                        .attr('class', function(){return 'datapoint';})
-                        .attr("x1", function(d,i)
-                          {
-                            if(i < 1){return 0;}
-                            else{return data[i-1].X;}
-                          })
-                        .attr("y1", function(d,i)
-                          {
-                            if(i < 1){return 0;}
-                            else{return data[i-1].Y;}
-                          })
-                        .attr("x2", function(d,i)
-                          {
-                            if(i < 1){return 0;}
-                            else{return d.X;}
-                          })
-                        .attr("y2", function(d,i)
-                          {
-                            if(i < 1){return 0;}
-                            else{return d.Y;}
-                          })
-                        .attr("stroke", function(d,i)
-                          {
-                            return '#59B33C';
-                          })
-                        .attr("stroke-width", function(d,i){return 2;});
-
-                line.transition()
-                    .attr("x1", function(d,i)
-                      {
-                        if(i < 1){return 0;}
-                        else{return data[i-1].X;}
-                      })
-                    .attr("y1", function(d,i)
-                      {
-                        if(i < 1){return 0;}
-                        else{return data[i-1].Y;}
-                      })
-                    .attr("x2", function(d,i)
-                      {
-                        if(i < 1){return 0;}
-                        else{return d.X;}
-                      })
-                    .attr("y2", function(d,i)
-                      {
-                        if(i < 1){return 0;}
-                        else{return d.Y;}
-                      })
-                    .attr("stroke", function(d,i){return '#59B33C';})
-                    .attr("stroke-width", function(d,i){return 2;});
-        }
-
-
-
-
-
-           var ipc = require('ipc');
-
-
-         setInterval(function() //update viewport size and things
-            {
-            //  drawReferenceLines($("svg").height(), $("svg").width()); - SLOW. so slow. why?
-
-
-              //console.log(ipc.sendSync('synchronous-message', 'data?'));
-
-                controller.addData(ipc.sendSync('synchronous-message', 'data?'));
-                update(controller.updateDataset());
-                update(controller.Draw($("svg").height(), $("svg").width()));
-            }
-
-            , 300);
-
-    });
-
-
-
     </script>
 
   </head>
@@ -296,15 +157,16 @@
         <div class="title centerInline centerVert-Item">OXEN</div>
     </div>
 
-    <!--
-    <div class="popupmenu">
-      popup menu
-    </div>
-  -->
 
-    <div id="view" class="view">
-
+    <div id="connectPopup" class="popupmenu invisible">
+      <h1 class ='connect-button'>Connect</h1>
+      <h3>Connect To Port</h3>
+      <div class="port-list" ></div>
+      <h3>Baud Rate</h3>
+      <ul class="baud-list"></ul>
     </div>
+
+    <div id="view" class="view"></div>
 
 
 
