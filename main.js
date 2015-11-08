@@ -42,9 +42,6 @@ app.on('ready', function() {
 
 // In main process.
 
-Connection.setupConnection(); //connecto to serial port
-
-
 var Data = function(){
   var buffer = [];
   this.getData = function(){
@@ -59,12 +56,15 @@ var Data = function(){
 var data = new Data();
 
 var ipc = require('ipc');
+
+Connection.init();
+
 ipc.on('synchronous-message', function(event, arg) {
-    //console.log(arg);  //print incoming message
   if(arg == 'data?') event.returnValue = data.getData(); //get data from buffer one piece at time
-  if(arg == 'ports?') event.returnValue = Connection.getPorts();
+  if(arg == 'ports?') event.returnValue = Connection.getPorts(); //get list of ports
 });
 
 ipc.on('portSelection', function(event, arg) {
-
+  Connection.setupConnection(arg.port, arg.rate); //open connection to port
+  event.returnValue = "Connected to Port";
 });
